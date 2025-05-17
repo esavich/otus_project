@@ -4,7 +4,6 @@ import (
 	"log/slog"
 	"net"
 	"net/http"
-	"os"
 	"strconv"
 	"time"
 
@@ -36,11 +35,10 @@ func (s *Server) Start() error {
 		ReadHeaderTimeout: 10 * time.Second,
 	}
 
-	slog.Info("starting server at : " + addr)
+	slog.Info("Starting server at : " + addr)
 	err := server.ListenAndServe()
 	if err != nil {
-		slog.Error("Error starting server: " + err.Error())
-		os.Exit(1)
+		return err
 	}
 
 	return nil

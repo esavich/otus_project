@@ -2,6 +2,7 @@ package resize
 
 import (
 	"fmt"
+	"image/jpeg"
 	"log/slog"
 	"net/http"
 	"net/url"
@@ -9,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/esavich/otus_project/internal/downloader"
+	"github.com/esavich/otus_project/internal/resizer"
 )
 
 type Handler struct{}
@@ -43,16 +45,26 @@ func (h *Handler) Resize(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid URL parameter: not jpeg", http.StatusBadRequest)
 		return
 	}
-	slog.Info(fmt.Sprintf("%dx%d@%s", iw, ih, imgURL))
+	slog.Info("Params", slog.Int("width", iw), slog.Int("height", ih), slog.String("url", imgURL))
 
 	d := downloader.NewDownloader()
 	img, err := d.Download(imgURL, r.Header)
 	if err != nil {
+		slog.Error(err.Error())
 		http.Error(w, "Cant get image: "+err.Error(), http.StatusBadGateway)
+		return
 	}
+	slog.Info("Image downloaded")
+	slog.Info("Resizing image", slog.Int("width", iw), slog.Int("height", ih))
+	resized, _ := resizer.ResizeImg(img, iw, ih)
 
 	w.Header().Set("Content-Type", "image/jpeg")
-	w.Write(img)
+	err = jpeg.Encode(w, resized, nil)
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, "Cant encode image: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 func checkJpg(imgURL string) bool {

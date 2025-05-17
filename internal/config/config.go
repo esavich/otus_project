@@ -9,10 +9,15 @@ import (
 type Config struct {
 	Cache CacheConf
 	HTTP  HTTPConf
+	App   AppConf
 }
 
+type AppConf struct {
+	ServiceName string `env:"SERVICE_NAME" env-default:"reziser"`
+	LogLevel    string `env:"LOG_LEVEL" env-default:"info"`
+}
 type CacheConf struct {
-	MaxItems int `env:"CACHE_ITEMS" env-default:"100"`
+	MaxItems int `env:"CACHE_ITEMS" env-default:"10"`
 }
 
 type HTTPConf struct {
@@ -20,12 +25,12 @@ type HTTPConf struct {
 	Port int    `env:"PORT" env-default:"8081"`
 }
 
-func Load() *Config {
+func Load() (*Config, error) {
 	var cfg Config
 	err := cleanenv.ReadConfig(".env", &cfg)
 	if err != nil {
-		fmt.Println("Error loading config:", err)
+		return nil, fmt.Errorf("error loading config: %w", err)
 	}
 
-	return &cfg
+	return &cfg, nil
 }
