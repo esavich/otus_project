@@ -13,12 +13,14 @@ import (
 )
 
 type Server struct {
-	Config *config.Config
+	Config  *config.Config
+	service service.ImageGetter
 }
 
-func NewServer(cfg *config.Config) *Server {
+func NewServer(cfg *config.Config, service service.ImageGetter) *Server {
 	return &Server{
-		Config: cfg,
+		Config:  cfg,
+		service: service,
 	}
 }
 
@@ -27,10 +29,7 @@ func (s *Server) Start() error {
 
 	mux := http.NewServeMux()
 
-	imageService := service.NewSimpleImageService()
-	cachedService := service.NewCachedImageService(imageService)
-
-	rh := resize.NewResizeHandler(cachedService)
+	rh := resize.NewResizeHandler(s.service)
 	mux.HandleFunc("GET /fill/{width}/{height}/{url...}", rh.Resize)
 
 	server := &http.Server{

@@ -8,8 +8,10 @@ import (
 	"syscall"
 
 	"github.com/esavich/otus_project/internal/config"
+	"github.com/esavich/otus_project/internal/diskcache"
 	"github.com/esavich/otus_project/internal/logger"
 	"github.com/esavich/otus_project/internal/server"
+	"github.com/esavich/otus_project/internal/service"
 )
 
 func main() {
@@ -23,7 +25,17 @@ func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL)
 	defer cancel()
 
-	srv := server.NewServer(cfg)
+	// main dependencies
+	// u can use
+	imageService := service.NewSimpleImageService()
+	dc, err := diskcache.NewDiskCacheWrapper(cfg.Cache.MaxItems, cfg.Cache.Path)
+	if err != nil {
+		slog.Error(fmt.Sprintf("Error creating disk cache: %s", err))
+		return
+	}
+	cachedService := service.NewCachedImageService(imageService, dc)
+
+	srv := server.NewServer(cfg, cachedService)
 
 	go func() {
 		slog.Debug("Starting server")
@@ -37,5 +49,11 @@ func main() {
 
 	<-ctx.Done()
 	slog.Info("Received shutdown signal, shutting down...")
+	err = dc.ClearDiskCache()
+	if err != nil {
+		slog.Error(fmt.Sprintf("Error clearing disk cache: %s", err))
+	}
+	slog.Info("Cache cleared")
+
 	cancel()
 }

@@ -23,10 +23,10 @@ func TestCache(t *testing.T) {
 	t.Run("simple", func(t *testing.T) {
 		c := NewCache(5)
 
-		wasInCache := c.Set("aaa", 100)
+		wasInCache := c.Set("aaa", 100, nil)
 		require.False(t, wasInCache)
 
-		wasInCache = c.Set("bbb", 200)
+		wasInCache = c.Set("bbb", 200, nil)
 		require.False(t, wasInCache)
 
 		val, ok := c.Get("aaa")
@@ -37,7 +37,7 @@ func TestCache(t *testing.T) {
 		require.True(t, ok)
 		require.Equal(t, 200, val)
 
-		wasInCache = c.Set("aaa", 300)
+		wasInCache = c.Set("aaa", 300, nil)
 		require.True(t, wasInCache)
 
 		val, ok = c.Get("aaa")
@@ -51,8 +51,8 @@ func TestCache(t *testing.T) {
 
 	t.Run("purge logic", func(t *testing.T) {
 		c := NewCache(5)
-		c.Set("aaa", 100)
-		c.Set("bbb", 200)
+		c.Set("aaa", 100, nil)
+		c.Set("bbb", 200, nil)
 
 		c.Clear()
 
@@ -67,10 +67,10 @@ func TestCache(t *testing.T) {
 
 	t.Run("capacity logic", func(t *testing.T) {
 		c := NewCache(3)
-		c.Set("aaa", 100)
-		c.Set("bbb", 200)
-		c.Set("ccc", 300)
-		c.Set("ddd", 400)
+		c.Set("aaa", 100, nil)
+		c.Set("bbb", 200, nil)
+		c.Set("ccc", 300, nil)
+		c.Set("ddd", 400, nil)
 
 		val, ok := c.Get("aaa")
 		require.False(t, ok)
@@ -79,15 +79,15 @@ func TestCache(t *testing.T) {
 
 	t.Run("LRU logic", func(t *testing.T) {
 		c := NewCache(3)
-		c.Set("aaa", 100)
-		c.Set("bbb", 200)
-		c.Set("ccc", 300)
+		c.Set("aaa", 100, nil)
+		c.Set("bbb", 200, nil)
+		c.Set("ccc", 300, nil)
 
-		c.Get("aaa")      // aaa used
-		c.Set("bbb", 500) // bbb updated
+		c.Get("aaa")           // aaa used
+		c.Set("bbb", 500, nil) // bbb updated
 		// ccc not used, will be removed
 
-		c.Set("ddd", 400)
+		c.Set("ddd", 400, nil)
 
 		// aaa exists
 		val, ok := c.Get("aaa")
@@ -118,7 +118,7 @@ func TestCacheMultithreading(_ *testing.T) {
 	go func() {
 		defer wg.Done()
 		for i := 0; i < 1_000_000; i++ {
-			c.Set(Key(strconv.Itoa(i)), i)
+			c.Set(Key(strconv.Itoa(i)), i, nil)
 		}
 	}()
 

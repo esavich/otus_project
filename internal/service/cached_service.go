@@ -6,19 +6,18 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/esavich/otus_project/internal/cache"
-	_ "github.com/esavich/otus_project/internal/cache"
+	"github.com/esavich/otus_project/internal/diskcache"
 )
 
 type CachedImageService struct {
-	cache cache.Cache
+	cache *diskcache.Wrapper
 	is    ImageGetter
 }
 
-func NewCachedImageService(is ImageGetter) *CachedImageService {
+func NewCachedImageService(is ImageGetter, dc *diskcache.Wrapper) *CachedImageService {
 	return &CachedImageService{
 		is:    is,
-		cache: cache.NewCache(5),
+		cache: dc,
 	}
 }
 
@@ -27,14 +26,15 @@ func (svc *CachedImageService) GetResizedImage(
 	imgURL string,
 	header http.Header,
 ) (image.Image, error) {
-	key := cache.Key(fmt.Sprintf("%d-%d-%s", width, height, imgURL))
+	key := fmt.Sprintf("%d-%d-%s", width, height, imgURL)
 
-	slog.Info("Cache key:" + string(key))
+	slog.Debug("Cache key:" + key)
 
 	slog.Info(fmt.Sprintf("Trying to get image from cache: %s", key))
+
 	if cachedImg, found := svc.cache.Get(key); found {
 		slog.Info(fmt.Sprintf("Cache hit: %s", key))
-		return cachedImg.(image.Image), nil
+		return cachedImg, nil
 	}
 
 	slog.Info("Cache miss, downloading image")
@@ -45,7 +45,10 @@ func (svc *CachedImageService) GetResizedImage(
 	}
 
 	// cache the resized image
-	svc.cache.Set(key, resizedImage)
+	err = svc.cache.Set(key, resizedImage)
+	if err != nil {
+		return nil, err
+	}
 	slog.Info(fmt.Sprintf("Cache set: %s", key))
 
 	return resizedImage, nil

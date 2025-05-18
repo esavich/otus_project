@@ -7,7 +7,7 @@ import (
 type Key string
 
 type Cache interface {
-	Set(key Key, value interface{}) bool
+	Set(key Key, value interface{}, callback func(value interface{})) bool
 	Get(key Key) (interface{}, bool)
 	Clear()
 }
@@ -24,7 +24,7 @@ type lruCache struct {
 	mutex    sync.Mutex
 }
 
-func (l *lruCache) Set(key Key, value interface{}) bool {
+func (l *lruCache) Set(key Key, value interface{}, callback func(value interface{})) bool {
 	l.mutex.Lock()
 	defer l.mutex.Unlock()
 	item, isInCache := l.items[key]
@@ -43,6 +43,9 @@ func (l *lruCache) Set(key Key, value interface{}) bool {
 	}
 	if l.queue.Len() == l.capacity {
 		lastItem := l.queue.Back()
+		if callback != nil {
+			callback(lastItem.Value.(cacheItem).value)
+		}
 		l.queue.Remove(lastItem)
 		delete(l.items, lastItem.Value.(cacheItem).key)
 	}

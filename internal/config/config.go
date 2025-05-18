@@ -17,7 +17,8 @@ type AppConf struct {
 	LogLevel    string `env:"LOG_LEVEL" env-default:"info"`
 }
 type CacheConf struct {
-	MaxItems int `env:"CACHE_ITEMS" env-default:"10"`
+	MaxItems int    `env:"CACHE_ITEMS" env-default:"10"`
+	Path     string `env:"CACHE_PATH" env-default:"./cache"`
 }
 
 type HTTPConf struct {
