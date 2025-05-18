@@ -1,0 +1,25 @@
+# https://taskfile.dev
+
+version: '3'
+
+vars:
+  GREETING: Hello, World!
+
+tasks:
+  run-local:
+    cmds:
+      - go run ./cmd/resizer/main.go
+    silent: true
+    desc: run the application
+
+  test:
+    cmds:
+      - go test -race -count 100 ./...
+    silent: true
+    desc: run tests
+
+  lint:
+    cmds:
+      - golangci-lint run
+    silent: true
+    desc: run linters

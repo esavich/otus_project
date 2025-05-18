@@ -2,21 +2,27 @@ package resize
 
 import (
 	"fmt"
+	"image"
 	"image/jpeg"
 	"log/slog"
 	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
-
-	"github.com/esavich/otus_project/internal/downloader"
-	"github.com/esavich/otus_project/internal/resizer"
 )
 
-type Handler struct{}
+type ImageGetter interface {
+	GetResizedImage(width, height int, imgURL string, header http.Header) (image.Image, error)
+}
 
-func NewResizeHandler() *Handler {
-	return &Handler{}
+type Handler struct {
+	ig ImageGetter
+}
+
+func NewResizeHandler(ig ImageGetter) *Handler {
+	return &Handler{
+		ig: ig,
+	}
 }
 
 func (h *Handler) Resize(w http.ResponseWriter, r *http.Request) {
@@ -47,16 +53,11 @@ func (h *Handler) Resize(w http.ResponseWriter, r *http.Request) {
 	}
 	slog.Info("Params", slog.Int("width", iw), slog.Int("height", ih), slog.String("url", imgURL))
 
-	d := downloader.NewDownloader()
-	img, err := d.Download(imgURL, r.Header)
+	resized, err := h.ig.GetResizedImage(iw, ih, imgURL, r.Header)
 	if err != nil {
-		slog.Error(err.Error())
 		http.Error(w, "Cant get image: "+err.Error(), http.StatusBadGateway)
 		return
 	}
-	slog.Info("Image downloaded")
-	slog.Info("Resizing image", slog.Int("width", iw), slog.Int("height", ih))
-	resized, _ := resizer.ResizeImg(img, iw, ih)
 
 	w.Header().Set("Content-Type", "image/jpeg")
 	err = jpeg.Encode(w, resized, nil)

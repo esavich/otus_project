@@ -9,6 +9,7 @@ import (
 
 	"github.com/esavich/otus_project/internal/config"
 	"github.com/esavich/otus_project/internal/handlers/resize"
+	"github.com/esavich/otus_project/internal/service"
 )
 
 type Server struct {
@@ -26,7 +27,10 @@ func (s *Server) Start() error {
 
 	mux := http.NewServeMux()
 
-	rh := resize.NewResizeHandler()
+	imageService := service.NewSimpleImageService()
+	cachedService := service.NewCachedImageService(imageService)
+
+	rh := resize.NewResizeHandler(cachedService)
 	mux.HandleFunc("GET /fill/{width}/{height}/{url...}", rh.Resize)
 
 	server := &http.Server{
