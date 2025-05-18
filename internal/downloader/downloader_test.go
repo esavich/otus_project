@@ -39,8 +39,8 @@ func TestDownloader_OK(t *testing.T) {
 
 	d := NewDownloader()
 
-	imgUrl := server.URL + "/image.jpg"
-	result, err := d.Download(imgUrl, headers)
+	imgURL := server.URL + "/image.jpg"
+	result, err := d.Download(imgURL, headers)
 
 	require.NoError(t, err)
 	require.NotNil(t, result)
@@ -61,8 +61,8 @@ func TestDownloader_ErrorCode(t *testing.T) {
 
 	d := NewDownloader()
 
-	imgUrl := server.URL + "/image.jpg"
-	result, err := d.Download(imgUrl, headers)
+	imgURL := server.URL + "/image.jpg"
+	result, err := d.Download(imgURL, headers)
 
 	require.Nil(t, result)
 	require.Error(t, err)
@@ -72,8 +72,8 @@ func TestDownloader_ErrorCode(t *testing.T) {
 func TestDownloader_InvalidUrl(t *testing.T) {
 	d := NewDownloader()
 
-	imgUrl := "invalid/image.jpg"
-	result, err := d.Download(imgUrl, headers)
+	imgURL := "invalid/image.jpg"
+	result, err := d.Download(imgURL, headers)
 
 	require.Nil(t, result)
 	require.Error(t, err)
@@ -95,8 +95,8 @@ func TestDownloader_NotJpeg(t *testing.T) {
 
 	d := NewDownloader()
 
-	imgUrl := server.URL + "/image.jpg"
-	result, err := d.Download(imgUrl, headers)
+	imgURL := server.URL + "/image.jpg"
+	result, err := d.Download(imgURL, headers)
 
 	require.Nil(t, result)
 	require.Error(t, err)
@@ -121,8 +121,8 @@ func TestDownloader_Timeout(t *testing.T) {
 
 	d := NewDownloader()
 
-	imgUrl := server.URL + "/image.jpg"
-	result, err := d.Download(imgUrl, headers)
+	imgURL := server.URL + "/image.jpg"
+	result, err := d.Download(imgURL, headers)
 
 	require.Nil(t, result)
 	require.Error(t, err)
