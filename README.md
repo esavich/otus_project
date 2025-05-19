@@ -1,3 +1,5 @@
+[![Go](https://github.com/esavich/otus_project/actions/workflows/go.yml/badge.svg)](https://github.com/esavich/otus_project/actions/workflows/go.yml)
+[![Coverage Status](https://coveralls.io/repos/github/esavich/otus_project/badge.svg)](https://coveralls.io/github/esavich/otus_project)
 [![Go Report Card](https://goreportcard.com/badge/github.com/esavich/otus_project)](https://goreportcard.com/report/github.com/esavich/otus_project)
 # Проэктная работа по курсу "Golang Developer. Professional"
 ## Превьювер изображений
