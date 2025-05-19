@@ -12,8 +12,8 @@ func NewResizer() *Resizer {
 	return &Resizer{}
 }
 
-func (*Resizer) ResizeImg(img image.Image, w int, p int) (image.Image, error) {
+func (*Resizer) ResizeImg(img image.Image, w int, p int) image.Image {
 	resized := imaging.Fill(img, w, p, imaging.Center, imaging.Lanczos)
 
-	return resized, nil
+	return resized
 }

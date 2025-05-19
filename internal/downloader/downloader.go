@@ -13,17 +13,19 @@ import (
 )
 
 type Downloader struct {
-	c *http.Client
+	c  *http.Client
+	to time.Duration
 }
 
-func NewDownloader() *Downloader {
+func NewDownloader(timeout time.Duration) *Downloader {
 	return &Downloader{
-		c: &http.Client{},
+		c:  &http.Client{},
+		to: timeout,
 	}
 }
 
 func (d *Downloader) Download(url string, header http.Header) (image.Image, error) {
-	ctx, cancel := context.WithTimeout(context.TODO(), 2*time.Second)
+	ctx, cancel := context.WithTimeout(context.TODO(), d.to)
 	defer cancel()
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {

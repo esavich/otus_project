@@ -9,7 +9,9 @@ import (
 
 	"github.com/esavich/otus_project/internal/config"
 	"github.com/esavich/otus_project/internal/diskcache"
+	"github.com/esavich/otus_project/internal/downloader"
 	"github.com/esavich/otus_project/internal/logger"
+	"github.com/esavich/otus_project/internal/resizer"
 	"github.com/esavich/otus_project/internal/server"
 	"github.com/esavich/otus_project/internal/service"
 )
@@ -27,7 +29,10 @@ func main() {
 
 	// main dependencies
 	// u can use
-	imageService := service.NewSimpleImageService()
+	imageService := service.NewSimpleImageService(
+		downloader.NewDownloader(cfg.App.DownloadTimeout),
+		resizer.NewResizer(),
+	)
 	dc, err := diskcache.NewDiskCacheWrapper(cfg.Cache.MaxItems, cfg.Cache.Path)
 	if err != nil {
 		slog.Error(fmt.Sprintf("Error creating disk cache: %s", err))

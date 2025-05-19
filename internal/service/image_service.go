@@ -5,23 +5,26 @@ import (
 	"image"
 	"log/slog"
 	"net/http"
-
-	"github.com/esavich/otus_project/internal/downloader"
-	"github.com/esavich/otus_project/internal/resizer"
 )
 
 type ImageGetter interface {
 	GetResizedImage(width, height int, imgURL string, header http.Header) (image.Image, error)
 }
 
-type SimpleImageService struct {
-	dl *downloader.Downloader
-	rz *resizer.Resizer
+type resizer interface {
+	ResizeImg(img image.Image, w int, h int) image.Image
 }
 
-func NewSimpleImageService() *SimpleImageService {
-	dl := downloader.NewDownloader()
-	rz := resizer.NewResizer()
+type downloader interface {
+	Download(imgURL string, header http.Header) (image.Image, error)
+}
+
+type SimpleImageService struct {
+	dl downloader
+	rz resizer
+}
+
+func NewSimpleImageService(dl downloader, rz resizer) *SimpleImageService {
 	return &SimpleImageService{
 		dl: dl,
 		rz: rz,
@@ -41,7 +44,7 @@ func (svc *SimpleImageService) GetResizedImage(
 	}
 	slog.Info("Image downloaded")
 	slog.Info("Resizing image", slog.Int("width", width), slog.Int("height", height))
-	resized, _ := svc.rz.ResizeImg(img, width, height)
+	resized := svc.rz.ResizeImg(img, width, height)
 
 	return resized, nil
 }

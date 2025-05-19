@@ -37,7 +37,7 @@ func TestDownloader_OK(t *testing.T) {
 
 	defer server.Close()
 
-	d := NewDownloader()
+	d := NewDownloader(2 * time.Second)
 
 	imgURL := server.URL + "/image.jpg"
 	result, err := d.Download(imgURL, headers)
@@ -59,7 +59,7 @@ func TestDownloader_ErrorCode(t *testing.T) {
 	}))
 	defer server.Close()
 
-	d := NewDownloader()
+	d := NewDownloader(2 * time.Second)
 
 	imgURL := server.URL + "/image.jpg"
 	result, err := d.Download(imgURL, headers)
@@ -70,7 +70,7 @@ func TestDownloader_ErrorCode(t *testing.T) {
 }
 
 func TestDownloader_InvalidUrl(t *testing.T) {
-	d := NewDownloader()
+	d := NewDownloader(2 * time.Second)
 
 	imgURL := "invalid/image.jpg"
 	result, err := d.Download(imgURL, headers)
@@ -93,7 +93,7 @@ func TestDownloader_NotJpeg(t *testing.T) {
 	}))
 	defer server.Close()
 
-	d := NewDownloader()
+	d := NewDownloader(2 * time.Second)
 
 	imgURL := server.URL + "/image.jpg"
 	result, err := d.Download(imgURL, headers)
@@ -111,7 +111,7 @@ func TestDownloader_Timeout(t *testing.T) {
 		assert.Equal(t, headers.Get("User-Agent"), r.Header.Get("User-Agent"))
 
 		// Simulate a long response time
-		time.Sleep(3 * time.Second)
+		time.Sleep(2 * time.Second)
 
 		w.Header().Set("Content-Type", "image/jpeg")
 		w.WriteHeader(http.StatusOK)
@@ -119,7 +119,7 @@ func TestDownloader_Timeout(t *testing.T) {
 	}))
 	defer server.Close()
 
-	d := NewDownloader()
+	d := NewDownloader(1 * time.Second)
 
 	imgURL := server.URL + "/image.jpg"
 	result, err := d.Download(imgURL, headers)

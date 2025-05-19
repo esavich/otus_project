@@ -5,16 +5,18 @@ import (
 	"image"
 	"log/slog"
 	"net/http"
-
-	"github.com/esavich/otus_project/internal/diskcache"
 )
 
+type disckCache interface {
+	Set(key string, data image.Image) error
+	Get(key string) (image.Image, bool)
+}
 type CachedImageService struct {
-	cache *diskcache.Wrapper
+	cache disckCache
 	is    ImageGetter
 }
 
-func NewCachedImageService(is ImageGetter, dc *diskcache.Wrapper) *CachedImageService {
+func NewCachedImageService(is ImageGetter, dc disckCache) *CachedImageService {
 	return &CachedImageService{
 		is:    is,
 		cache: dc,

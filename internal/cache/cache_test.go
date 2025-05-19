@@ -131,3 +131,22 @@ func TestCacheMultithreading(_ *testing.T) {
 
 	wg.Wait()
 }
+
+func TestCacheCallback(t *testing.T) {
+	c := NewCache(2)
+
+	var callbackCalled bool
+	callback := func(value interface{}) {
+		callbackCalled = true
+		require.Equal(t, 100, value) // check that the right removing value is passed
+	}
+
+	// Заполняем кеш до предела
+	c.Set("aaa", 100, nil)
+	c.Set("bbb", 200, nil)
+
+	// add new element to remove 100 value
+	c.Set("ccc", 300, callback)
+
+	require.True(t, callbackCalled, "Callback must be called")
+}

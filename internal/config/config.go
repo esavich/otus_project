@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/ilyakaznacheev/cleanenv"
 )
@@ -13,8 +14,9 @@ type Config struct {
 }
 
 type AppConf struct {
-	ServiceName string `env:"SERVICE_NAME" env-default:"reziser"`
-	LogLevel    string `env:"LOG_LEVEL" env-default:"info"`
+	ServiceName     string        `env:"SERVICE_NAME" env-default:"reziser"`
+	LogLevel        string        `env:"LOG_LEVEL" env-default:"info"`
+	DownloadTimeout time.Duration `env:"DOWNLOAD_TIMEOUT" env-default:"2s"`
 }
 type CacheConf struct {
 	MaxItems int    `env:"CACHE_ITEMS" env-default:"10"`
