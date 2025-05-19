@@ -49,6 +49,7 @@ func (dc *Wrapper) Set(key string, data image.Image) error {
 	outFile, err := os.Create(filePath)
 	if err != nil {
 		slog.Error(err.Error())
+		return err
 	}
 	defer outFile.Close()
 	err = jpeg.Encode(outFile, data, nil)
