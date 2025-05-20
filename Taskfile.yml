@@ -6,6 +6,24 @@ vars:
   GREETING: Hello, World!
 
 tasks:
+  build:
+    cmds:
+      - docker compose build
+    silent: true
+    desc: build the docker container
+
+  run:
+    cmds:
+      - docker compose up -d
+    silent: true
+    desc: run the docker container
+
+  stop:
+    cmds:
+      - docker compose down
+    silent: true
+    desc: stop the docker container
+
   build-local:
     cmds:
       - go build -o resizer ./cmd/resizer/main.go

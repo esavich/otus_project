@@ -1,0 +1,8 @@
+services:
+  resize-proxy:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: resize-proxy:latest
+    ports:
+      - "8081:8081"
