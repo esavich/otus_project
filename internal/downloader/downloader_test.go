@@ -111,7 +111,7 @@ func TestDownloader_Timeout(t *testing.T) {
 		assert.Equal(t, headers.Get("User-Agent"), r.Header.Get("User-Agent"))
 
 		// Simulate a long response time
-		time.Sleep(2 * time.Second)
+		time.Sleep(150 * time.Millisecond)
 
 		w.Header().Set("Content-Type", "image/jpeg")
 		w.WriteHeader(http.StatusOK)
@@ -119,7 +119,7 @@ func TestDownloader_Timeout(t *testing.T) {
 	}))
 	defer server.Close()
 
-	d := NewDownloader(1 * time.Second)
+	d := NewDownloader(100 * time.Millisecond)
 
 	imgURL := server.URL + "/image.jpg"
 	result, err := d.Download(imgURL, headers)

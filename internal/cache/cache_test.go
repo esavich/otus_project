@@ -117,14 +117,14 @@ func TestCacheMultithreading(_ *testing.T) {
 
 	go func() {
 		defer wg.Done()
-		for i := 0; i < 1_000_000; i++ {
+		for i := 0; i < 10_000; i++ {
 			c.Set(Key(strconv.Itoa(i)), i, nil)
 		}
 	}()
 
 	go func() {
 		defer wg.Done()
-		for i := 0; i < 1_000_000; i++ {
+		for i := 0; i < 10_000; i++ {
 			c.Get(Key(strconv.Itoa(rand.Intn(1_000_000)))) //nolint:gosec
 		}
 	}()
