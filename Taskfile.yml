@@ -42,6 +42,12 @@ tasks:
     silent: true
     desc: run tests
 
+  integration-test:
+    cmds:
+      - go test -tags=integration ./tests/...
+    silent: true
+    desc: run tests
+
   lint:
     cmds:
       - golangci-lint run
