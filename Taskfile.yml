@@ -6,6 +6,12 @@ vars:
   GREETING: Hello, World!
 
 tasks:
+  build-local:
+    cmds:
+      - go build -o resizer ./cmd/resizer/main.go
+    silent: true
+    desc: build the application
+
   run-local:
     cmds:
       - go run ./cmd/resizer/main.go
