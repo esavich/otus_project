@@ -74,8 +74,8 @@ func checkJpg(imgURL string) bool {
 }
 
 func processURL(u string) (string, error) {
-	// костыль тк дефолтный роутер переписывает двойные слеши в один
-	// так же добавим дефолтный http префикс если его нет
+	// workaround because the default router rewrites double slashes to a single one
+	// also add the default http prefix if it is missing
 
 	switch {
 	case strings.HasPrefix(u, "http:/") && !strings.HasPrefix(u, "http://"):
@@ -86,7 +86,7 @@ func processURL(u string) (string, error) {
 		u = "http://" + u
 	}
 
-	// провалидируем что получился корректный урл
+	// validate url
 	_, err := url.Parse(u)
 	if err != nil {
 		return "", fmt.Errorf("invalid URL: %w", err)
