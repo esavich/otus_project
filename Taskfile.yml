@@ -1,0 +1,52 @@
+# https://taskfile.dev
+
+version: '3'
+
+tasks:
+  build:
+    cmds:
+      - docker compose build
+    silent: true
+    desc: build the docker container
+
+  run:
+    cmds:
+      - docker compose up -d
+    silent: true
+    desc: run the docker container
+
+  stop:
+    cmds:
+      - docker compose down
+    silent: true
+    desc: stop the docker container
+
+  build-local:
+    cmds:
+      - go build -o resizer ./cmd/resizer/main.go
+    silent: true
+    desc: build the application
+
+  run-local:
+    cmds:
+      - go run ./cmd/resizer/main.go
+    silent: true
+    desc: run the application
+
+  test:
+    cmds:
+      - go test -race -count 100 ./...
+    silent: true
+    desc: run tests
+
+  integration-test:
+    cmds:
+      - go test -tags=integration ./tests/...
+    silent: true
+    desc: run tests
+
+  lint:
+    cmds:
+      - golangci-lint run
+    silent: true
+    desc: run linters
