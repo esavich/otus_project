@@ -9,12 +9,10 @@ RUN go mod tidy && \
 
 FROM alpine:latest
 
-RUN pwd && ls -la
 COPY --from=builder /app/resizer /app/resizer
 
 COPY .env.dist /app/.env
-RUN pwd && ls -la
-WORKDIR /app
 
+WORKDIR /app
 
 CMD ["./resizer"]
